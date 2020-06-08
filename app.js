@@ -58,6 +58,19 @@ var budgetController = (function() {
             return newItem;
         },
 
+        deleteItem: function(type, id) {
+            var ids, index;
+
+            var ids = data.allItems[type].map(function(current) {
+                return current.id;
+            });
+            index = ids.indexOf(id);
+
+            if (index !== -1) {
+                data.allItems[type].splice(index, 1);
+            }
+        },
+
         calculateBudget: function() {
             // calculate total income and expenses
             calculateTotal('exp');
@@ -145,6 +158,11 @@ var UIcontroller = (function() {
 
         },
 
+        deleteListItem: function(selectorID) {
+            var el = document.getElementById(selectorID);
+            el.parentNode.removeChild(el);
+        },
+
         clearFields: function() {
             var fields, fieldsArr;
             fields = document.querySelectorAll(DOMstrings.inputDescription + ', ' + DOMstrings.inputValue);
@@ -196,7 +214,7 @@ var controller = (function(budgetCtrl, UIctrl) {
         });
 
         document.querySelector(DOM.container).addEventListener('click', ctrlDeleteItem);
-    }
+    };
     
     var updateBudget = function() {
 
@@ -209,6 +227,13 @@ var controller = (function(budgetCtrl, UIctrl) {
         //3. Display the budget on the UI .
         UIctrl.displayBudget(budget);
     };
+
+    var updatePercentages = function() {
+
+        //1. calculate percentages
+        //2. Read percentages from the budget controller
+        //3. Update the UI witht he new percentages
+    }
 
     var ctrlAddItem = function() {
         var input, newItem ;
@@ -240,11 +265,17 @@ var controller = (function(budgetCtrl, UIctrl) {
 
             splitID = itemID.split('-');
             type = splitID[0];
-            ID = splitID[1];
+            ID = parseInt(splitID[1]);
 
             //1. delete item from data structure
+            budgetCtrl.deleteItem(type, ID);
+
             //2. delete item from UI
+            UIctrl.deleteListItem(itemID);
+
             //3. Update and show new budget
+            updateBudget();
+
             
 
 
